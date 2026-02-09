@@ -62,22 +62,19 @@ func (h *Handler) Resolve(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if encReq.Data != "" {
-			decrypted, err := h.cipher.Decrypt(encReq.Data)
-			if err != nil {
-				h.writeError(w, "decryption failed", http.StatusBadRequest)
-				return
-			}
-			if err := json.Unmarshal(decrypted, &req); err != nil {
-				h.writeError(w, "invalid decrypted payload", http.StatusBadRequest)
-				return
-			}
-		} else {
-			// Fallback to unencrypted (for backwards compatibility)
-			if err := json.Unmarshal([]byte(r.Body.Read), &req); err != nil {
-				h.writeError(w, "invalid request body", http.StatusBadRequest)
-				return
-			}
+		if encReq.Data == "" {
+			h.writeError(w, "encrypted data required when encryption is enabled", http.StatusBadRequest)
+			return
+		}
+
+		decrypted, err := h.cipher.Decrypt(encReq.Data)
+		if err != nil {
+			h.writeError(w, "decryption failed", http.StatusBadRequest)
+			return
+		}
+		if err := json.Unmarshal(decrypted, &req); err != nil {
+			h.writeError(w, "invalid decrypted payload", http.StatusBadRequest)
+			return
 		}
 	} else {
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

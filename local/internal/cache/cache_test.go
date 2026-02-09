@@ -59,16 +59,16 @@ func TestCache(t *testing.T) {
 		key := Key(msg.Question[0])
 		cache.Set(key, msg)
 
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(1100 * time.Millisecond) // Wait at least 1 second
 
 		got, ok := cache.Get(key)
 		if !ok {
 			t.Fatal("Expected cache hit")
 		}
 
-		// TTL should be reduced
+		// TTL should be reduced by at least 1
 		if got.Answer[0].Header().Ttl >= 300 {
-			t.Error("TTL should be reduced after time passes")
+			t.Errorf("TTL should be reduced, got %d", got.Answer[0].Header().Ttl)
 		}
 	})
 

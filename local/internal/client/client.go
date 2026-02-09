@@ -105,7 +105,6 @@ func (c *Client) Resolve(ctx context.Context, domain string, recordType string) 
 	}
 
 	var body []byte
-	var err error
 
 	if c.cipher != nil {
 		// Encrypt the request
