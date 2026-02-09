@@ -1,0 +1,40 @@
+# Local DNS Server Configuration
+
+server:
+  listen_addr: "127.0.0.1"
+  port: 53
+  protocol: "udp"  # udp, tcp, or both
+
+api:
+  endpoints:
+    - url: "https://your-server.example.com/api/v1/resolve"
+      api_key: "your-secure-api-key-here-change-me"
+      weight: 1
+    # Add more endpoints for failover/load balancing
+    # - url: "https://backup-server.example.com/api/v1/resolve"
+    #   api_key: "backup-api-key"
+    #   weight: 1
+  timeout: 10s
+  max_retries: 3
+  retry_delay: 500ms
+  health_check_freq: 30s
+  load_balancing: "round_robin"  # round_robin, failover
+
+cache:
+  enabled: true
+  max_items: 10000
+  default_ttl: 5m
+  min_ttl: 60s
+  max_ttl: 24h
+  negative_ttl: 5m
+
+security:
+  encryption_enabled: false
+  # 32 bytes hex key for AES-256-GCM (generate with: openssl rand -hex 32)
+  # Must match the remote server's encryption_key
+  encryption_key: "0000000000000000000000000000000000000000000000000000000000000000"
+
+logging:
+  level: "info"
+  format: "text"
+  output_file: ""  # Empty for stdout
